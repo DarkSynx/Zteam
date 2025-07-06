@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Zteam</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="style.css" rel="stylesheet" />
+</head>
+<body>
+  <div id="app">
+    <div id="titlebar">
+      <div>Zteam</div>
+      <div id="window-controls">
+        <button id="min-btn">—</button>
+        <button id="max-btn">⬜</button>
+        <button id="close-btn">✕</button>
+      </div>
+    </div>
+
+    <div id="tabbar">
+      <div class="tab active" data-id="zteam">Zteam</div>
+	  <div class="tab" data-id="test">Test</div>
+    </div>
+
+<div id="content">
+  <webview id="wv-zteam" src="./webview/zteam/zteampage.html" preload="./webview/zteam/preload.js" class="active"></webview>
+  
+  <webview id="wv-test" src="./webview/test/test.html" preload="./webview/test/preload.js" ></webview>
+</div>
+
+
+
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
