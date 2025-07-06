@@ -13,7 +13,7 @@ function log(...args) {
 function loadConfig() {
   if (fs.existsSync(CFG)) {
     config = fs.readJsonSync(CFG);
-    log('Config chargée :', config);
+    log('Config chargée :', JSON.stringify(config));
   } else {
     log('Aucune config existante, nouveau fichier initialisé');
   }
@@ -38,7 +38,7 @@ function register(event, { name }) {
   let entry = config.onglets.find(o => o.name === name && o.active);
   if (!entry) {
     const uuid = makeUUID();
-    const id = config.onglets.length + 1;
+    const id = config.onglets.reduce((max, o) => Math.max(max, o.id || 0), 0) + 1;
     const zuid = makeZUID(uuid);
     entry = { name, id, uuid, zuid, role: '', context: '', active: true };
     config.onglets.push(entry);
@@ -62,6 +62,7 @@ function routeMessage(event, msg) {
 
   const { from, to, channel, data } = msg;
 
+  const targets = [];
   config.onglets.forEach(o => {
     if (!o.active) return;
     const wc = webContents
@@ -70,12 +71,14 @@ function routeMessage(event, msg) {
     if (!wc) return;
     if (to === '*' || to === o.id) {
       wc.send('to-webview', { from, channel, data });
-      log(`→ envoyé à id=${o.id} (${o.name}) via channel '${channel}'`);
+      targets.push(`${o.id}:${o.name}`);
     }
   });
+  log(`Routé depuis ${from} vers [${targets.join(', ')}] via '${channel}'`);
 }
 
 ipcMain.on('register', register);
 ipcMain.on('route', (e, msg) => routeMessage(e, msg));
 
 log('✅ Contrôleur initialisé et en écoute');
+
