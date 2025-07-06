@@ -1,5 +1,5 @@
 const { contextBridge, ipcRenderer } = require('electron');
-const { ModulesGestion } = require('../../mods.js');
+const { ModulesGestion } = require('../../mod.js');
 const { fsx, path, jqueryPath, WinLoad, loadOrCreateInit, readFile, writeFile } = ModulesGestion({ modulePath: __dirname });
 
 contextBridge.exposeInMainWorld('Bridge', {
