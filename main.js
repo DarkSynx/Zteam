@@ -1,4 +1,4 @@
-const path = require('path');  // ← ajoute cette ligne
+const path = require('path');
 const { app, BrowserWindow, ipcMain } = require('electron');
 require(path.join(__dirname, 'controleur.js'));
 
