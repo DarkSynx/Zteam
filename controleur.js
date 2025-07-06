@@ -80,5 +80,5 @@ function routeMessage(event, msg) {
 ipcMain.on('register', register);
 ipcMain.on('route', (e, msg) => routeMessage(e, msg));
 
-log('Controleur initialise et en ecoute');
+log('✅ Contrôleur initialisé et en écoute');
 
