@@ -13,8 +13,6 @@ window.addEventListener('DOMContentLoaded', () => {
   const defaultEntry = { name: path.basename(__dirname), id: '', uuid: '', zuid: '', role: '', context: '', active: true };
   const entry = loadOrCreateInit(__dirname, defaultEntry);
 
-  Bridge.register(entry.name);
-
   Bridge.onRegister((info) => {
     if (!entry.id) {
       entry.id = info.id;
@@ -32,6 +30,8 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
+  Bridge.register(entry.name);
 
   Bridge.onMessage((msg) => {
     alert(`from ${msg.from}: ${msg.data}`);
