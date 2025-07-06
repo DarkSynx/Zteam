@@ -1,15 +1,40 @@
 const { contextBridge, ipcRenderer } = require('electron');
+const { ModulesGestion } = require('../../mods.js');
+const { fsx, path, jqueryPath, WinLoad, loadOrCreateInit, readFile, writeFile } = ModulesGestion({ modulePath: __dirname });
 
 contextBridge.exposeInMainWorld('Bridge', {
   register: (name) => ipcRenderer.send('register', { name }),
-  onRegister: (fn) => ipcRenderer.on('register-response', (_, info) => fn(info)),
+  onRegister: (cb) => ipcRenderer.once('register-response', (_, info) => cb(info)),
   send: (msg) => ipcRenderer.send('route', msg),
-  onMessage: (fn) => ipcRenderer.on('to-webview', (_, msg) => fn(msg))
+  onMessage: (cb) => ipcRenderer.on('to-webview', (_, msg) => cb(msg))
 });
 
-// inscription dès le chargement
 window.addEventListener('DOMContentLoaded', () => {
-  const name = path.basename(__dirname);
-  Bridge.register(name);
+  const defaultEntry = { name: path.basename(__dirname), id: '', uuid: '', zuid: '', role: '', context: '', active: true };
+  const entry = loadOrCreateInit(__dirname, defaultEntry);
+
+  Bridge.register(entry.name);
+
+  Bridge.onRegister((info) => {
+    if (!entry.id) {
+      entry.id = info.id;
+      entry.uuid = info.uuid;
+      entry.zuid = info.zuid;
+      writeFile(path.join(__dirname, 'init.json'), JSON.stringify(entry, null, 2));
+    }
+    WinLoad({
+      jqueryPath,
+      afterModulLoad: function ($) {
+        $('body').append(`<div>Test ID=${entry.id}</div>`);
+        document.getElementById('btnSend').addEventListener('click', () => {
+          Bridge.send({ from: entry.id, to: '*', channel: 'test', data: 'ping' });
+        });
+      }
+    });
+  });
+
+  Bridge.onMessage((msg) => {
+    alert(`from ${msg.from}: ${msg.data}`);
+  });
 });
-Bridge.send({ from: 0, to: '*', channel: 'test', data: 'ping manuel' });
+

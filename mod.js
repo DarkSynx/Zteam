@@ -3,7 +3,7 @@ const fs = require('fs-extra');
 const jschardet = require('jschardet');
 const iconv = require('iconv-lite');
 const path = require('path');
-const { contextBridge, ipcRenderer } = require('electron');
+const { ipcRenderer } = require('electron');
 
 // Une simple API d'encodage
 function readFile(filePath, encoding = null) {
@@ -24,7 +24,7 @@ function loadOrCreateInit(modulePath, defaultEntry) {
   const initPath = path.join(modulePath, 'init.json');
   let entry = {};
 
-  if (fsx.existsSync(initPath)) {
+  if (fs.existsSync(initPath)) {
     entry = JSON.parse(readFile(initPath));
   } else {
     entry = defaultEntry;
@@ -80,6 +80,7 @@ function ModulesGestion({ modulePath }) {
     jqueryPath,
     WinLoad,
     ipcToWebView,
+    loadOrCreateInit,
     path_CFG: path.join(modulePath, 'config.json'),
     path_ROOT: modulePath,
     path_DOCS: path.join(modulePath, 'docs'),
